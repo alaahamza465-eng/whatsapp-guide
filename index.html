@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>دليل نظام حملات واتساب</title>
+<meta name="description" content="كيف بنيت نظام حملات واتساب بربط رسمي مع ميتا، بمحادثة مع Claude وبدون برمجة: المتطلبات، البرومبت، قواعد حماية الرقم، والتكلفة.">
+<meta property="og:title" content="كيف بنيت نظام حملات واتساب بمحادثة مع Claude">
+<meta property="og:description" content="يرسل على دفعات، يرد على المهتمين لوحده، ينبّهك، ويعطيك تقريراً. الدليل الكامل والبرومبت.">
+<meta name="theme-color" content="#0E7A52">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Reem+Kufi:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #EEF2EC; --card: #FFFFFF; --ink: #13261E; --muted: #4E6158; --line: #CFD9D1;
+  --bubble: #D9F5CF; --tick: #2389D6; --go: #0E7A52; --on-go: #FFFFFF; --warn: #8A5300; --warn-soft: #FBEFD9;
+  --display: "Reem Kufi", "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --body: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0F1A15; --card: #16241D; --ink: #E4EFE8; --muted: #A3B8AC; --line: #29402F;
+    --bubble: #1F3B2B; --tick: #5BB8F0; --go: #2FBF7F; --on-go: #06170F; --warn: #F2B65C; --warn-soft: #33270F;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0F1A15; --card: #16241D; --ink: #E4EFE8; --muted: #A3B8AC; --line: #29402F;
+  --bubble: #1F3B2B; --tick: #5BB8F0; --go: #2FBF7F; --on-go: #06170F; --warn: #F2B65C; --warn-soft: #33270F;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 17px/1.85 var(--body); }
+a { color: var(--go); text-underline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--tick); outline-offset: 3px; border-radius: 6px; }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+.col { max-width: 660px; }
+
+/* hero */
+.hero { display: grid; gap: 36px; padding: 56px 0 40px; align-items: center; }
+@media (min-width: 900px) { .hero { grid-template-columns: 1.15fr .85fr; gap: 56px; padding: 88px 0 64px; } }
+.by { margin: 0 0 18px; color: var(--muted); font-size: 15px; }
+h1 { font: 700 clamp(34px, 7vw, 58px)/1.25 var(--display); margin: 0 0 20px; letter-spacing: 0; }
+.lead { font-size: 19px; margin: 0 0 28px; color: var(--ink); max-width: 34em; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; padding: 0 22px; border-radius: 26px;
+  font: 600 16px/1 var(--body); text-decoration: none; border: 2px solid var(--go); }
+.btn.go { background: var(--go); color: var(--on-go); }
+.btn.ghost { color: var(--go); background: transparent; }
+
+/* the proof: a real campaign, told in WhatsApp ticks */
+.phone { background: var(--card); border: 1px solid var(--line); border-radius: 28px; padding: 18px 16px 20px; box-shadow: 0 30px 60px -38px rgba(19,38,30,.55); }
+.phone-h { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 0 4px 12px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+.phone-h b { font: 600 16px var(--display); }
+.phone-h span { color: var(--muted); font-size: 13px; }
+.bubble { background: var(--bubble); border-radius: 16px 16px 16px 4px; padding: 12px 14px 8px; font-size: 15px; line-height: 1.7; margin-inline-end: 22px; }
+.bubble small { display: block; text-align: left; color: var(--muted); font-size: 12px; margin-top: 2px; direction: ltr; }
+.qr { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 6px 22px 16px 0; }
+.qr span { text-align: center; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 7px 4px; font-size: 14px; color: var(--tick); font-weight: 600; }
+.ticks { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.ticks li { display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 10px; padding: 9px 6px; border-radius: 12px; }
+.ticks li + li { border-top: 1px dashed var(--line); }
+.ticks .t { font: 600 15px/1 var(--body); color: var(--muted); direction: ltr; text-align: center; letter-spacing: -2px; }
+.ticks .t.read { color: var(--tick); }
+.ticks .n { font: 700 26px/1 var(--display); }
+.ticks .k { font-size: 15px; }
+.ticks li.hot { background: var(--warn-soft); }
+.ticks li.hot .n { color: var(--warn); }
+.proof-note { margin: 12px 4px 0; font-size: 13px; color: var(--muted); }
+@media (prefers-reduced-motion: no-preference) {
+  .ticks li { opacity: 0; transform: translateY(6px); animation: tick .5s ease forwards; }
+  .ticks li:nth-child(1) { animation-delay: .5s; } .ticks li:nth-child(2) { animation-delay: 1.1s; }
+  .ticks li:nth-child(3) { animation-delay: 1.7s; } .ticks li:nth-child(4) { animation-delay: 2.4s; }
+  @keyframes tick { to { opacity: 1; transform: none; } }
+}
+
+/* sections */
+section.part { padding: 40px 0; border-top: 1px solid var(--line); }
+h2 { font: 700 clamp(26px, 4.6vw, 36px)/1.35 var(--display); margin: 0 0 12px; }
+h3 { font: 600 19px/1.55 var(--body); margin: 0 0 6px; }
+.part > .wrap > .col > p:first-of-type { margin-top: 0; }
+.muted { color: var(--muted); }
+.flow { list-style: none; margin: 24px 0 0; padding: 0; counter-reset: s; display: grid; gap: 18px; }
+.flow li { counter-increment: s; display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: start; }
+.flow li::before { content: counter(s, arabic-indic); width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--card); border: 2px solid var(--go); color: var(--go); font: 700 19px/1 var(--display); }
+.flow b { display: block; font-weight: 600; }
+.check { list-style: none; padding: 0; margin: 20px 0; display: grid; gap: 14px; }
+.check li { position: relative; padding-inline-start: 38px; }
+.check li::before { content: ""; position: absolute; inset-inline-start: 0; top: 6px; width: 22px; height: 22px; border: 2px solid var(--go); border-radius: 7px; }
+.check b { font-weight: 600; }
+.pass { background: var(--card); border-inline-start: 4px solid var(--go); border-radius: 10px; padding: 12px 16px; margin: 18px 0 0; }
+.pass b { color: var(--go); }
+
+.prompt { position: relative; background: var(--card); border: 1px solid var(--line); border-radius: 18px; margin: 22px 0 14px; }
+.prompt pre { margin: 0; padding: 20px 18px 18px; white-space: pre-wrap; word-wrap: break-word; font: 400 15.5px/1.9 var(--body); }
+.prompt .bar { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 12px 10px 18px; border-bottom: 1px solid var(--line); }
+.prompt .bar span { font-weight: 600; font-size: 15px; }
+.copy { min-height: 40px; padding: 0 16px; border-radius: 20px; border: 2px solid var(--go); background: var(--go); color: var(--on-go); font: 600 14px var(--body); cursor: pointer; }
+.notes { padding-inline-start: 22px; margin: 0; }
+.notes li { margin-bottom: 8px; }
+
+.rule { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 20px 18px; margin: 18px 0; }
+.rule dl { margin: 10px 0 0; display: grid; gap: 8px; }
+.rule dt { font-weight: 600; color: var(--muted); font-size: 14px; }
+.rule dd { margin: -6px 0 0; }
+.rule dd.ok { color: var(--go); font-weight: 500; }
+
+.why { display: grid; gap: 14px; margin-top: 18px; }
+.why > div { padding: 16px 18px; border-radius: 16px; background: var(--card); border: 1px solid var(--line); }
+.why .warnbox { background: var(--warn-soft); border-color: transparent; }
+.why .warnbox b { color: var(--warn); }
+
+.cost { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 16px; }
+.cost th, .cost td { text-align: right; padding: 12px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.cost th { font-weight: 600; width: 38%; }
+
+.final { background: var(--go); color: var(--on-go); border-radius: 28px; padding: 32px 22px; margin: 8px 0 40px; }
+.final h2 { color: inherit; }
+.final p { margin: 0 0 20px; max-width: 34em; }
+.final .btn { background: var(--on-go); color: var(--go); border-color: var(--on-go); }
+.final small { display: block; margin-top: 14px; opacity: .85; font-size: 14px; }
+footer { padding: 8px 0 48px; color: var(--muted); font-size: 14px; }
+footer ul { padding-inline-start: 18px; margin: 6px 0 0; }
+</style>
+</head>
+<body>
+<main>
+  <div class="wrap">
+    <header class="hero">
+      <div>
+        <p class="by">علاء الخضري، النون للحلول الرقمية</p>
+        <h1>كيف بنيتُ نظام حملات واتساب بمحادثة مع Claude</h1>
+        <p class="lead">نظام يرسل رسائلك على دفعات، ويرد على المهتمين وحده، وينبّهك على جوالك، ويعطيك تقريراً. الربط رسمي مع ميتا، ولم أكتب سطر برمجة واحد.</p>
+        <div class="actions">
+          <a class="btn go" href="#how">اقرأ الدليل</a>
+          <a class="btn ghost" href="https://wa.me/970599032366?text=%D8%A8%D8%AF%D9%8A%20%D9%86%D8%B8%D8%A7%D9%85%20%D8%AD%D9%85%D9%84%D8%A7%D8%AA%20%D8%A7%D9%84%D9%88%D8%A7%D8%AA%D8%B3%D8%A7%D8%A8%20%D8%AC%D8%A7%D9%87%D8%B2" target="_blank" rel="noopener">أريده جاهزاً على رقمي</a>
+        </div>
+      </div>
+      <figure class="phone" aria-label="نتيجة أول يوم من حملة حقيقية">
+        <div class="phone-h"><b>حملة ورشة الأكاديمية</b><span>أول يوم تشغيل</span></div>
+        <div class="bubble">مرحبا سارة 👋 معك أكاديمية النون. ورشة جديدة لبرمجة المواقع بالذكاء الاصطناعي، 3 أيام. بدك التفاصيل؟<small>1:28 م</small></div>
+        <div class="qr"><span>آه، بدي التفاصيل</span><span>مش مهتم</span></div>
+        <ul class="ticks">
+          <li><span class="t">✓</span><span class="k">انبعتت</span><span class="n">50</span></li>
+          <li><span class="t">✓✓</span><span class="k">وصلت</span><span class="n">36</span></li>
+          <li><span class="t read">✓✓</span><span class="k">فتحوها</span><span class="n">24</span></li>
+          <li class="hot"><span class="t">🙋</span><span class="k">ضغطوا «بدي التفاصيل»</span><span class="n">3</span></li>
+        </ul>
+        <figcaption class="proof-note">أرقام حقيقية من أول 4 ساعات لحملة في أكاديمية النون، 10 أكتوبر 2026. وكل من ضغط وصله الرد خلال ثوانٍ.</figcaption>
+      </figure>
+    </header>
+  </div>
+
+  <section class="part" id="how">
+    <div class="wrap"><div class="col">
+      <h2>ماذا يفعل النظام، خطوة بخطوة</h2>
+      <p class="muted">كل شيء من لوحة واحدة على جوالك، بالعربي.</p>
+      <ol class="flow">
+        <li><div><b>ترفع كشف الأرقام وتكتب الرسالة</b>والنظام يرسلها لميتا لتوافق عليها. تقدر تكتب حتى 3 نسخ، ويوزّعها على الناس.</div></li>
+        <li><div><b>تجرّب على رقمك</b>ويريك إن كانت وصلت فعلاً، أو لماذا لم تصل وماذا تفعل.</div></li>
+        <li><div><b>تضغط «ابدأ الإرسال»</b>فيرسل على دفعات، بالسرعة والساعات والأيام التي تحددها، ويوقف وقت صلاة الجمعة.</div></li>
+        <li><div><b>من يضغط «بدي التفاصيل» يصله الرد فوراً</b>ويصلك إشعار على جوالك، وترد عليه من نفس اللوحة. ومن يضغط «مش مهتم» لا يصله شيء بعدها.</div></li>
+        <li><div><b>تتابع وتنزّل التقرير</b>من وصلته الرسالة، ومن فتحها، ومن رد، في ملف Excel بضغطة.</div></li>
+      </ol>
+    </div></div>
+  </section>
+
+  <section class="part" id="ready">
+    <div class="wrap"><div class="col">
+      <h2>جهّز هذه الخمسة قبل أن تبدأ</h2>
+      <p>من دونها لن يعمل شيء، مهما كان البرنامج ذكياً.</p>
+      <ul class="check">
+        <li><b>حساب Meta Business</b> على <a href="https://business.facebook.com" target="_blank" rel="noopener">business.facebook.com</a>، باسم شغلك.</li>
+        <li><b>رقم هاتف للحملات.</b> الأسهل رقم جديد غير مستخدم على تطبيق واتساب، لأن الربط الرسمي يحتاج رقماً خاصاً به.</li>
+        <li><b>تطبيق على <a href="https://developers.facebook.com" target="_blank" rel="noopener">developers.facebook.com</a></b> مضاف له WhatsApp. منه تأخذ Phone number ID ورقم الحساب WABA ID ومفتاح الدخول (Token).</li>
+        <li><b>سيرفر عليه n8n.</b> أنا أستخدم سيرفراً صغيراً (VPS). n8n نفسه مجاني إذا ثبّته على سيرفرك.</li>
+        <li><b>وسيلة دفع</b> مضافة في WhatsApp Manager، لأن ميتا تحاسب على رسائل التسويق التي تصل.</li>
+      </ul>
+      <p class="pass"><b>تعرف أنك جاهز</b> عندما ترسل رسالة hello_world التجريبية من صفحة API Setup في تطبيقك، وتصل إلى جوالك.</p>
+    </div></div>
+  </section>
+
+  <section class="part" id="prompt">
+    <div class="wrap"><div class="col">
+      <h2>البرومبت الذي بنيت به النظام</h2>
+      <p>أعطيت Claude وصولاً إلى n8n الخاص بي من المتصفح، وكتبت له طلبي بكلام بسيط. هو بنى، وجرّب كل جزء، ونشر. هذه خلاصة ما طلبته:</p>
+      <div class="prompt">
+        <div class="bar"><span>انسخه وعدّل ما يخص شغلك</span><button class="copy" id="copyBtn" type="button">انسخ البرومبت</button></div>
+<pre id="promptText">ابنِ لي نظام حملات واتساب على n8n الخاص بي، يعمل عبر WhatsApp Cloud API الرسمي من ميتا. أريد:
+
+1. لوحة تحكم بسيطة بالعربي، أفتحها من الجوال برمز دخول.
+2. أنشئ حملة، وأرفع كشف أرقام (Excel)، وأكتب حتى 3 نسخ من الرسالة، والنظام يرسلها لميتا للموافقة كرسالة تسويق.
+3. زر «ابعت تجربة» لرقمي، يريني هل وصلت فعلاً أم لا، ولماذا.
+4. الإرسال على دفعات: أحدد كم رسالة كل كم دقيقة، والساعات والأيام، وحداً يومياً يبدأ صغيراً (50 ثم 100 ثم 200).
+5. في الرسالة زران: «بدي التفاصيل» و«مش مهتم». المهتم يصله رد تلقائي أكتبه أنا، ومن قال «مش مهتم» لا يصله شيء بعدها.
+6. إشعار على جوالي عندما يرد أحد، وأرد عليه من نفس اللوحة.
+7. تتبّع: من وصلته، ومن فتحها، ومن رد، وتقرير أنزّله Excel.
+8. حماية الرقم: يوقف الإرسال وحده إذا نزلت جودة الرقم، أو زادت نسبة «مش مهتم».
+9. إذا منعت ميتا رسالة لشخص (رمز 131049)، أعد المحاولة بعد 24 ساعة على الأقل، وأعطِ الأولوية لمن كتب لي في آخر 24 ساعة.
+
+اشتغل خطوة خطوة، وجرّب كل جزء قبل أن تنشره. لا تطلب مني مفتاح الدخول (Token) في المحادثة: سأضعه بنفسي في n8n.</pre>
+      </div>
+      <ul class="notes">
+        <li>Claude يبني ويجرّب، وأنت تراجع النتيجة. اطلب منه دائماً أن يجرّب قبل أن ينشر.</li>
+        <li>لا تلصق مفتاح الدخول ولا كلمات السر في المحادثة. ضعها بنفسك داخل n8n في قسم Credentials.</li>
+        <li>أي تعديل لاحق اطلبه بنفس الطريقة: «أريد زر كذا»، «غيّر كذا».</li>
+      </ul>
+      <p class="pass"><b>تعرف أنه نجح</b> عندما تصل رسالة التجربة إلى رقمك، وعندما تضغط «بدي التفاصيل» يصلك الرد خلال ثوانٍ.</p>
+    </div></div>
+  </section>
+
+  <section class="part" id="protect">
+    <div class="wrap"><div class="col">
+      <h2>4 قواعد تحمي رقمك من الإيقاف</h2>
+      <p>الرقم هو رأس مالك هنا. هذه القواعد بنيتها داخل النظام نفسه.</p>
+      <div class="rule">
+        <h3>ابدأ صغيراً وكبّر تدريجياً</h3>
+        <dl>
+          <dt>لماذا</dt><dd>الرقم الجديد بلا تاريخ عند ميتا. القفز السريع يرفع البلاغات ويخفض جودة الرقم. وميتا تبدأ الأرقام الجديدة بحد 250 شخصاً في اليوم، وترفعه وحدها مع الجودة.</dd>
+          <dt>كيف</dt><dd>50 رسالة أول يوم، ثم 100، ثم 200.</dd>
+          <dt>افحص</dt><dd class="ok">جودة الرقم في WhatsApp Manager خضراء.</dd>
+        </dl>
+      </div>
+      <div class="rule">
+        <h3>ضع زر «مش مهتم» في كل رسالة، واحترمه</h3>
+        <dl>
+          <dt>لماذا</dt><dd>من لا يجد طريقة سهلة للرفض يضغط «حظر» أو «إبلاغ»، وهذا ما يحرق الرقم.</dd>
+          <dt>كيف</dt><dd>من يضغطه لا تصله أي حملة بعدها، ولا من حملة ثانية.</dd>
+          <dt>افحص</dt><dd class="ok">نسبة «مش مهتم» أقل من 5% من الذين وصلتهم.</dd>
+        </dl>
+      </div>
+      <div class="rule">
+        <h3>أوقف كل شيء إذا صارت الجودة صفراء</h3>
+        <dl>
+          <dt>لماذا</dt><dd>الأصفر إنذار من ميتا. الاستمرار يحوّله أحمر، ثم يُقيَّد الرقم.</dd>
+          <dt>كيف</dt><dd>النظام يفحص الجودة قبل كل دفعة، ويوقف الحملات وحده ويرسل لك إشعاراً.</dd>
+          <dt>افحص</dt><dd class="ok">بعد التوقف، راجع نص الرسالة قبل أن تكمل.</dd>
+        </dl>
+      </div>
+      <div class="rule">
+        <h3>لا تصنّف رسالة تسويق على أنها «خدمة»</h3>
+        <dl>
+          <dt>لماذا</dt><dd>البعض يفعلها ليتهرب من سعر التسويق أو من حدوده. ميتا تكتشفها وتغيّر التصنيف أو توقف الرسالة، والتكرار يضر الحساب كله.</dd>
+          <dt>كيف</dt><dd>العروض والدورات والحملات دائماً «تسويق» (Marketing).</dd>
+          <dt>افحص</dt><dd class="ok">كل رسائلك الموافق عليها تظهر بفئة Marketing.</dd>
+        </dl>
+      </div>
+    </div></div>
+  </section>
+
+  <section class="part" id="delivery">
+    <div class="wrap"><div class="col">
+      <h2>لماذا لا تصل بعض الرسائل، وكيف تجعلها تصل</h2>
+      <p>السبب الأشهر حد ميتا لرسائل التسويق لكل شخص (رمز 131049): إذا وصل الشخص تسويق كثير مؤخراً من أي شركة، تمنع ميتا رسالتك عنه. لا يوجد برنامج يلغي هذا الحد، لكن هذه الطرق تتجاوزه بشكل مشروع:</p>
+      <div class="why">
+        <div class="warnbox"><b>انتظر 24 ساعة على الأقل قبل الإعادة.</b> ميتا نفسها تقول إن الإعادة الأسرع تطيل المنع. النظام يعيد وحده بعد 25 ساعة، حتى 7 مرات.</div>
+        <div><b>اجعل الناس يكتبون لك أولاً.</b> من يكتب لك تُفتح له نافذة 24 ساعة، ورسائل التسويق فيها لا يطبق عليها هذا الحد. رابط wa.me ورمز QR على منشوراتك وبوستراتك يفعلان هذا.</div>
+        <div><b>إعلانات «أرسل رسالة على واتساب».</b> من يكتب لك من إعلان منها تُفتح له نافذة مجانية لمدة 72 ساعة، وكل الرسائل فيها مجانية.</div>
+      </div>
+    </div></div>
+  </section>
+
+  <section class="part" id="cost">
+    <div class="wrap"><div class="col">
+      <h2>كم يكلّف</h2>
+      <table class="cost">
+        <tr><th>رسائل التسويق</th><td>ميتا تحاسب على الرسالة عندما تصل فقط. السعر حسب دولة الرقم، وتجده في <a href="https://developers.facebook.com/documentation/business-messaging/whatsapp/pricing" target="_blank" rel="noopener">جدول أسعار ميتا</a>.</td></tr>
+        <tr><th>ردودك على الناس</th><td>مجانية، ما دامت خلال 24 ساعة من آخر رسالة منهم.</td></tr>
+        <tr><th>n8n</th><td>مجاني إذا ثبّته على سيرفرك. تدفع فقط ثمن السيرفر.</td></tr>
+        <tr><th>Claude</th><td>اشتراكك فيه، وهو الذي يبني ويعدّل.</td></tr>
+      </table>
+    </div></div>
+  </section>
+
+  <section class="part" id="start">
+    <div class="wrap"><div class="col">
+      <h2>قائمة التشغيل</h2>
+      <ul class="check">
+        <li>رسالة hello_world وصلت لجوالي من صفحة API Setup.</li>
+        <li>n8n يعمل، ومفتاح الدخول محفوظ في Credentials.</li>
+        <li>الرسالة وافقت عليها ميتا، وفيها زرا «بدي التفاصيل» و«مش مهتم».</li>
+        <li>التجربة وصلت لرقمي، والرد التلقائي وصل بعد ضغط الزر.</li>
+        <li>الحد اليومي يبدأ من 50.</li>
+        <li>رابط wa.me منشور على صفحتي.</li>
+      </ul>
+    </div></div>
+  </section>
+
+  <div class="wrap">
+    <div class="final">
+      <h2>لا تريد أن تبنيه بنفسك؟</h2>
+      <p>نركّبه لك على رقمك: نجهّز الربط مع ميتا، ونبني اللوحة على سيرفرك، ونجرّب معك أول حملة.</p>
+      <a class="btn" href="https://wa.me/970599032366?text=%D8%A8%D8%AF%D9%8A%20%D9%86%D8%B8%D8%A7%D9%85%20%D8%AD%D9%85%D9%84%D8%A7%D8%AA%20%D8%A7%D9%84%D9%88%D8%A7%D8%AA%D8%B3%D8%A7%D8%A8%20%D8%AC%D8%A7%D9%87%D8%B2" target="_blank" rel="noopener">اكتب لنا على واتساب</a>
+      <small>وبما أنك كتبت لنا أولاً، رسائلنا ستصلك أكيد 😉</small>
+    </div>
+  </div>
+</main>
+<footer>
+  <div class="wrap"><div class="col">
+    <p>علاء الخضري، مؤسس <a href="https://anoonsolutions.com" target="_blank" rel="noopener">النون للحلول الرقمية</a>. على انستقرام <a href="https://instagram.com/alaaalkhodaryofficial" target="_blank" rel="noopener">@alaaalkhodaryofficial</a>.</p>
+    <p>المصادر:</p>
+    <ul>
+      <li><a href="https://developers.facebook.com/documentation/business-messaging/whatsapp/templates/marketing-templates/per-user-limits/" target="_blank" rel="noopener">حد رسائل التسويق لكل شخص (ميتا)</a></li>
+      <li><a href="https://developers.facebook.com/documentation/business-messaging/whatsapp/pricing" target="_blank" rel="noopener">أسعار منصة واتساب للأعمال (ميتا)</a></li>
+    </ul>
+  </div></div>
+</footer>
+<script>
+(function () {
+  var b = document.getElementById('copyBtn'), t = document.getElementById('promptText');
+  if (!b || !t) return;
+  b.addEventListener('click', function () {
+    var text = t.innerText;
+    var done = function (ok) { b.textContent = ok ? 'تم النسخ ✓' : 'علّم النص وانسخه'; setTimeout(function () { b.textContent = 'انسخ البرومبت'; }, 2200); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { done(true); }, function () { fallback(); });
+    else fallback();
+    function fallback() {
+      var a = document.createElement('textarea'); a.value = text; a.setAttribute('readonly', ''); a.style.position = 'fixed'; a.style.opacity = '0';
+      document.body.appendChild(a); a.select(); var ok = false; try { ok = document.execCommand('copy'); } catch (e) {} a.remove(); done(ok);
+    }
+  });
+})();
+</script>
+</body>
+</html>
